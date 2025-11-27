@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🔥 LeetCode 讨论数 Top 排行榜</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, sans-serif;
+        background-color: #f9f9fc;
+        color: #333;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+      }
+      header {
+        text-align: center;
+        padding: 30px 0;
+        background: #2c3e50;
+        color: white;
+        border-radius: 10px;
+        margin-bottom: 20px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+      .subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+        margin-top: 8px;
+      }
+      .search-box {
+        display: block;
+        width: 100%;
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 12px 16px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .table-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+      th {
+        background-color: #34495e;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+      }
+      tr:hover {
+        background-color: #f5f7fa;
+      }
+      .title-link {
+        color: #2980b9;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .title-link:hover {
+        text-decoration: underline;
+      }
+      .no-data {
+        text-align: center;
+        padding: 40px;
+        color: #7f8c8d;
+        font-style: italic;
+      }
+      footer {
+        text-align: center;
+        margin-top: 30px;
+        color: #7f8c8d;
+        font-size: 14px;
+      }
+      .footer-link {
+        color: #2980b9;
+        text-decoration: none;
+      }
+      .footer-link:hover {
+        text-decoration: underline;
+      }
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+        font-size: 14px;
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+        gap: 10px;
+      }
+      #perPageSelect {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+        font-size: 14px;
+      }
+      #commentFilterSelect {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+        font-size: 14px;
+      }
+      #clearFilters {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        background: white;
+        color: #e74c3c;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      #clearFilters:hover {
+        background: #fdf2f2;
+      }
+      .results-info {
+        text-align: center;
+        color: #666;
+        margin: 10px 0;
+        font-size: 14px;
+        padding: 10px;
+      }
+      .page-btn {
+        padding: 6px 12px;
+        border: 1px solid #ddd;
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+      }
+      .page-btn:hover {
+        background: #f0f0f0;
+      }
+      .page-btn.active {
+        background: #3498db;
+        color: white;
+        border-color: #3498db;
+      }
+      .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🔥 LeetCode 讨论数 Top 排行榜</h1>
+      <div class="subtitle">
+        根据中文站讨论区热度排序 · 共
+        <span id="total-count">0</span>
+        道热门题目
+      </div>
+    </header>
+
+    <input
+      type="text"
+      id="search"
+      class="search-box"
+      placeholder="🔍 搜索题号或标题（如：two-sum 或 1）"
+    />
+
+    <div class="controls">
+      <label for="perPageSelect">每页显示：</label>
+      <select id="perPageSelect">
+        <option value="10">10 条</option>
+        <option value="25">25 条</option>
+        <option value="50" selected>50 条</option>
+        <option value="100">100 条</option>
+      </select>
+
+      <label for="commentFilterSelect">评论数：</label>
+      <select id="commentFilterSelect">
+        <option value="0">所有</option>
+        <option value="100">100+</option>
+        <option value="500">500+</option>
+        <option value="1000">1000+</option>
+        <option value="2000">2000+</option>
+        <option value="3000">3000+</option>
+        <option value="4000">4000+</option>
+        <option value="5000">5000+</option>
+      </select>
+
+      <button id="clearFilters">清空筛选</button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)"># 题号</th>
+            <th onclick="sortTable(1)">📌 标题</th>
+            <th onclick="sortTable(2)">💬 评论数</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+
+    <div id="results-info" class="results-info"></div>
+
+    <div class="pagination" id="pagination"></div>
+
+    <footer>
+      数据来源：本地缓存 · 你可以使用
+      <a
+        class="footer-link"
+        href="https://github.com/yourname/leetcode-tools"
+        target="_blank"
+      >
+        LeetCode 爬取脚本
+      </a>
+      更新
+    </footer>
+
+    <script>
+      let data = [];
+      let itemsPerPage = 50;
+      let currentPage = 1;
+      let sortBy = [0, "asc"]; // [columnIndex, direction]
+
+      // ============ 加载 JSON 数据 ============
+      async function loadData() {
+        try {
+          const response = await fetch("./data.json");
+          if (!response.ok)
+            throw new Error(`HTTP error! status: ${response.status}`);
+          const rawData = await response.json();
+
+          // 假设 data.json 是一个对象数组，如：[{ problemNo: "1", titleSlug: "two-sum", commentCount: 1200, url: "https://..." }, ...]
+          data = Array.isArray(rawData) ? rawData : Object.values(rawData);
+
+          // 过滤掉无效评论数并按评论数降序排列
+          data = data
+            .filter(
+              (p) => p.commentCount !== undefined && p.commentCount !== -1
+            )
+            .sort((a, b) => b.commentCount - a.commentCount);
+
+          document.getElementById("total-count").textContent = data.length;
+          renderTable();
+        } catch (e) {
+          console.error("❌ 无法加载或解析 data.json:", e);
+          document.getElementById("total-count").textContent = 0;
+          const tableBody = document.getElementById("table-body");
+          const row = tableBody.insertRow();
+          const cell = row.insertCell();
+          cell.colSpan = 3;
+          cell.className = "no-data";
+          cell.textContent =
+            "数据加载失败，请检查 data.json 文件是否存在且格式正确。";
+        }
+      }
+
+      // ========== 功能函数 ==========
+
+      function renderTable() {
+        const tableBody = document.getElementById("table-body");
+        if (!tableBody) return;
+        tableBody.innerHTML = "";
+
+        const searchQuery = document
+          .getElementById("search")
+          .value.toLowerCase()
+          .trim();
+
+        const commentFilterSelect = document.getElementById("commentFilterSelect");
+        const filterLevel = commentFilterSelect ? parseInt(commentFilterSelect.value) || 0 : 0;
+
+        const filtered = data.filter(
+          (row) =>
+            (row.problemNo.includes(searchQuery) ||
+             row.titleSlug.toLowerCase().includes(searchQuery)) &&
+            (filterLevel === 0 || row.commentCount >= filterLevel)
+        );
+
+        const totalPages = Math.ceil(filtered.length / itemsPerPage);
+        if (currentPage > totalPages && totalPages > 0)
+          currentPage = totalPages;
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const slice = filtered.slice(start, start + itemsPerPage);
+
+        if (slice.length === 0) {
+          const row = tableBody.insertRow();
+          const cell = row.insertCell();
+          cell.colSpan = 3;
+          cell.className = "no-data";
+          cell.textContent = searchQuery
+            ? `没有匹配 "${searchQuery}" 的题目`
+            : "暂无数据";
+          document.getElementById("pagination").innerHTML = "";
+          return;
+        }
+
+        slice.forEach((row) => {
+          const tr = tableBody.insertRow();
+          tr.insertCell().textContent = row.problemNo;
+          const titleCell = tr.insertCell();
+          const link = document.createElement("a");
+          link.href = row.url;
+          link.textContent = row.titleSlug;
+          link.className = "title-link";
+          link.target = "_blank";
+          titleCell.appendChild(link);
+          tr.insertCell().textContent = row.commentCount.toLocaleString();
+        });
+
+        renderPagination(filtered.length, totalPages);
+
+        // 更新结果统计
+        const resultsInfo = document.getElementById('results-info');
+        if (resultsInfo) {
+          if (filtered.length === 0) {
+            resultsInfo.textContent = searchQuery || filterLevel > 0 ? '无匹配结果' : '暂无数据';
+          } else {
+            const startIdx = (currentPage - 1) * itemsPerPage + 1;
+            const endIdx = Math.min(currentPage * itemsPerPage, filtered.length);
+            resultsInfo.textContent = `显示 ${startIdx}-${endIdx} / ${filtered.length} 条结果`;
+          }
+        }
+      }
+
+      function renderPagination(totalItems, totalPages) {
+        const pg = document.getElementById("pagination");
+        if (!pg) return;
+        pg.innerHTML = "";
+
+        if (totalPages <= 1) return;
+
+        const createBtn = (text, isDisabled, clickHandler) => {
+          const btn = document.createElement("button");
+          btn.textContent = text;
+          btn.className = "page-btn";
+          if (isDisabled) btn.disabled = true;
+          btn.onclick = clickHandler;
+          return btn;
+        };
+
+        pg.appendChild(
+          createBtn("«", currentPage === 1, () => {
+            currentPage = 1;
+            renderTable();
+          })
+        );
+        pg.appendChild(
+          createBtn("‹", currentPage === 1, () => {
+            if (currentPage > 1) {
+              currentPage--;
+              renderTable();
+            }
+          })
+        );
+
+        const maxButtons = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+        let endPage = startPage + maxButtons - 1;
+
+        if (endPage > totalPages) {
+          endPage = totalPages;
+          startPage = Math.max(1, endPage - maxButtons + 1);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+          const btn = document.createElement("button");
+          btn.textContent = i;
+          btn.className = i === currentPage ? "page-btn active" : "page-btn";
+          btn.onclick = () => {
+            currentPage = i;
+            renderTable();
+          };
+          pg.appendChild(btn);
+        }
+
+        pg.appendChild(
+          createBtn("›", currentPage === totalPages, () => {
+            if (currentPage < totalPages) {
+              currentPage++;
+              renderTable();
+            }
+          })
+        );
+        pg.appendChild(
+          createBtn("»", currentPage === totalPages, () => {
+            currentPage = totalPages;
+            renderTable();
+          })
+        );
+      }
+
+      function sortTable(colIndex) {
+        const isAscending = sortBy[0] === colIndex ? sortBy[1] === "asc" : true;
+
+        data.sort((a, b) => {
+          let valA, valB;
+          if (colIndex === 0) {
+            valA = parseInt(a.problemNo, 10);
+            valB = parseInt(b.problemNo, 10);
+          } else if (colIndex === 2) {
+            valA = a.commentCount;
+            valB = b.commentCount;
+          } else {
+            valA = a.titleSlug.toLowerCase();
+            valB = b.titleSlug.toLowerCase();
+          }
+
+          const order = isAscending ? 1 : -1;
+          return order * (valA < valB ? -1 : valA > valB ? 1 : 0);
+        });
+
+        sortBy = [colIndex, isAscending ? "desc" : "asc"];
+        currentPage = 1;
+        renderTable();
+      }
+
+      // 实时搜索
+      document.getElementById("search").addEventListener("input", () => {
+        currentPage = 1;
+        renderTable();
+      });
+
+      // 每页数量选择
+      document.getElementById("perPageSelect").addEventListener("change", () => {
+        itemsPerPage = parseInt(document.getElementById("perPageSelect").value);
+        currentPage = 1;
+        renderTable();
+      });
+
+      // 评论数量筛选
+      document.getElementById("commentFilterSelect").addEventListener("change", () => {
+        currentPage = 1;
+        renderTable();
+      });
+
+      // 清空筛选
+      document.getElementById("clearFilters").addEventListener("click", () => {
+        document.getElementById("search").value = "";
+        document.getElementById("commentFilterSelect").value = "0";
+        document.getElementById("perPageSelect").value = "50";
+        currentPage = 1;
+        renderTable();
+      });
+
+      // 页面加载完成后启动
+      window.addEventListener("DOMContentLoaded", () => {
+        loadData(); // 启动数据加载
+      });
+    </script>
+  </body>
+</html>
