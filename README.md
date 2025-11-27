@@ -10,7 +10,7 @@
 
 ## 文件说明
 
-- [`data.json`](data.json): LeetCode 问题讨论数原始数据（JSON 格式）。
+- [`data.json`](data.json): LeetCode 问题讨论数原始数据（JSON 格式）。**最后更新：2025年11月27日**
 - [`LeetCode-讨论数-Top-排行榜.html`](LeetCode-讨论数-Top-排行榜.html): 基于 data.json 生成的 Top 排行榜 HTML 文件，可直接在浏览器中打开查看。
 
 ## 使用方法
