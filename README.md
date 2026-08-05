@@ -1,3 +1,11 @@
+[English](./README.en.md)
+
+<!-- codex-github-rules:bilingual-summary -->
+> **中文简介**：按讨论热度排序的 LeetCode 热门题目榜
+>
+> **English summary**: Top LeetCode problems ranked by discussion activity
+
+---
 # LeetCode 评论数排行榜
 
 ## 数据来源
